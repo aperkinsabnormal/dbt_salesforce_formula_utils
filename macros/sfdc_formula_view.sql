@@ -25,14 +25,14 @@
             "`object` = '"
         ) ~ source_table ~ "'" -%}
 
-        {%- set sql = dbt_utils.get_column_values_sql(
+        {%- set sql = dbt_utils.get_column_values(
             table=source(source_name, 'fivetran_formula_model'),
             column=quoted_col,
             where=quoted_where
         ) -%}
 
     {% else %}
-        {%- set sql = dbt_utils.get_column_values_sql(
+        {%- set sql = dbt_utils.get_column_values(
             table=source(source_name, 'fivetran_formula_model'),
             column='model',
             where="object = '" ~ source_table ~ "'"
