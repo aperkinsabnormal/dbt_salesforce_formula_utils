@@ -26,9 +26,9 @@
         ) ~ source_table ~ "'" -%}
 
         {%- set table_results = dbt_utils.get_column_values(
-            table=source(source_name, 'fivetran_formula_model'),
-            column=quoted_col,
-            where=quoted_where
+    table=source(source_name, 'fivetran_formula_model'),
+    column=quoted_col,
+    where="LOWER(\"object\") = '" ~ source_table | lower ~ "'"
         ) -%}
 
     {% else %}
