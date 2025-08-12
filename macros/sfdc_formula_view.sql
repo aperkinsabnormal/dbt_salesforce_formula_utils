@@ -25,22 +25,26 @@
             "`object` = '"
         ) ~ source_table ~ "'" -%}
 
-        {%- set sql = dbt_utils.get_column_values(
+        {%- set table_results = dbt_utils.get_column_values(
             table=source(source_name, 'fivetran_formula_model'),
             column=quoted_col,
             where=quoted_where
         ) -%}
 
     {% else %}
-        {%- set sql = dbt_utils.get_column_values(
+        {%- set table_results = dbt_utils.get_column_values(
             table=source(source_name, 'fivetran_formula_model'),
             column='model',
             where="object = '" ~ source_table ~ "'"
         ) -%}
     {% endif %}
 
-    {% set table_results = run_query(sql).columns[0].values() %}
-    {{ table_results[0] }}
+    {% if table_results | length == 0 %}
+        {{ exceptions.warn("\nWARNING: No formula model found in fivetran_formula_model for object '" ~ source_table ~ "'. Defaulting to SELECT * FROM " ~ source(source_name, source_table) ~ "\n") }}
+        select * from {{ source(source_name, source_table) }}
+    {% else %}
+        {{ table_results[0] }}
+    {% endif %}
 
 {% endif %}
 
